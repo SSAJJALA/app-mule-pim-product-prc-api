@@ -1,0 +1,18 @@
+{
+  "header" : {
+    "transId" : "1641",
+    "transType" : "UPDATE",
+    "requestType" : "BRAND",
+    "userid" : "X121700",
+    "effDate" : "02042020",
+    "cloneType" : "",
+    "isResubmit" : "N"
+  },
+  "brandRecord" : {
+    "brandName" : "SBTESTBrandName",
+    "brandAbbrevAsys" : "AsysBrName",
+    "brandAbbrevPsys" : "PsysB",
+    "brandType" : "1",
+    "usfManufacturerNumber" : "654321"
+  }
+}

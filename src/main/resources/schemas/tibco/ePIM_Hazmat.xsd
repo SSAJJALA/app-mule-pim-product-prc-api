@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 sp2 (http://www.altova.com) by Krishnan Chirchabesan (Tescra) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pim-hazmat="urn:pim-hazmat" targetNamespace="urn:pim-hazmat" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="Hazmat">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Hazard_ID" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

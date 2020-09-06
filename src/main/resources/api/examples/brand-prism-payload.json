@@ -1,0 +1,18 @@
+{
+   "header" : {
+    "transId" : "12344321",
+    "transType" : "BRAND",
+    "requestType" : "UPDATE",
+    "userid" : "X121700",
+    "effDate" : "09132019",
+    "cloneType" : "1",
+    "isResubmit" : "N"
+  },
+  "brandRecord" : {
+    "brandName" : "BrandOwn1",
+    "brandAbbrevAsys" : "ABC",
+    "brandAbbrevPsys" : "DEF",
+    "brandType" : "1",
+    "usfManufacturerNumber" : "3464654754"
+  }
+}

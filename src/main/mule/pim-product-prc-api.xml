@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
+    <apikit:config name="pim-product-prc-api-config" raml="api/pim-product-prc-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<flow name="pim-product-prc-api-main">
+        <http:listener path="${http.listener.path}" config-ref="HTTP_Listener_config">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+				<http:headers ><![CDATA[#[output application/java
+---
+{
+	"transaction-id" : vars.transactionid
+}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+				<http:headers ><![CDATA[#[output application/java
+---
+{
+	"transaction-id" : vars.transactionid
+}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="pim-product-prc-api-config"/>
+        <error-handler ref="pim-product-prc-api-_GlobalError_Handler"/>
+    </flow>
+	<flow name="pim-product-prc-api-console">
+        <http:listener path="/console/*" config-ref="HTTP_Listener_config" doc:id="ef50c237-9824-4bb7-a000-03c4f67ab779">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="pim-product-prc-api-config"/>
+        <error-handler ref="pim-product-prc-api-_GlobalError_Handler"/>
+    </flow>
+    <flow name="post:\abbreviation:application\json:pim-product-prc-api-config">
+        <flow-ref doc:name="publish-abbr-information-subflow" doc:id="39bb4514-b27d-4442-9ead-f1fb99bcafb0" name="publish-abbr-information-subflow"/>
+    </flow>
+    <flow name="post:\brand:application\json:pim-product-prc-api-config">
+		<flow-ref doc:name="publish-brand-information-subflow" doc:id="b0afd4bd-3462-4b7a-90a5-432e7c889bde" name="publish-brand-information-subflow"/>
+    </flow>
+    <flow name="post:\products:application\json:pim-product-prc-api-config">
+        <flow-ref doc:name="publish-product-information-subflow" doc:id="ea7f840e-a6ba-4b61-96d5-5366b00a792f" name="publish-product-information-subflow"/>
+    </flow>
+</mule>

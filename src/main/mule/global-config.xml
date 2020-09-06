@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="a0a7588e-08d2-48b4-b680-8813bba3c99c" file="pim-product-prc-api-${deploy.env}.properties" />
+	<global-property doc:name="Global Property" doc:id="ba958aa6-88be-4416-a3c2-f27837db4e50" name="deploy.env" value="loc" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="5a63d219-2063-4684-baa4-fd9eea2ac02a" file="pim-product-prc-api-${deploy.env}.properties" key="pimproduct" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="4dd32e8c-2a46-4f04-a023-fdaeb48f061e" >
+		<jms:generic-connection specification="JMS_2_0" username="${jms.security.principal}" password="${secure::jms.security.credentials}" >
+			<jms:connection-factory >
+				<jms:jndi-connection-factory connectionFactoryJndiName="${jms.queue.connection.factory}" lookupDestination="ALWAYS" >
+					<jms:name-resolver-builder jndiInitialContextFactory="${jms.initial.context.factory}" jndiProviderUrl="${jms.provider.url}" >
+						<jms:provider-properties >
+							<jms:provider-property key="queue.jndi-queue-in" value="in" />
+							<jms:provider-property key="topic.jndi-topic-in" value="in" />
+							<jms:provider-property key="java.naming.security.principal" value="${jms.security.principal}" />
+							<jms:provider-property key="java.naming.security.credentials" value="${secure::jms.security.credentials}" />
+						</jms:provider-properties>
+					</jms:name-resolver-builder>
+				</jms:jndi-connection-factory>
+			</jms:connection-factory>
+		</jms:generic-connection>
+	</jms:config>
+	<api-gateway:autodiscovery apiId="${api.id}" doc:name="API Autodiscovery" doc:id="416597ff-2fc7-4497-8719-b02b5d63aefc" flowRef="pim-product-prc-api-main" />
+	<error-handler name="pim-product-prc-api-_GlobalError_Handler" doc:id="2b4c8d4f-c62b-4ef6-aeef-8a618e8f85f1" >
+		 <on-error-propagate type="APIKIT:BAD_REQUEST" enableNotifications="true" logException="true">
+                <logger level="ERROR" doc:name="400ReqLog" doc:id="7ffc9cb8-7200-4ff7-a142-f92b1b17ac9e" message="#[%dw 2.0 output application/json
+--- 
+{
+&quot;txnID&quot; : attributes.headers.'transaction-id',
+&quot;txn400StartTime&quot;: now(),
+&quot;reqPayload&quot;: payload,
+&quot;error&quot;: error
+}]" category="com.usf.logger"/>
+				<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="dc508387-a5a8-491c-b4a9-03df458aa2cb">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Bad request"
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+			<logger level="ERROR" doc:name="400ResLog" doc:id="ab28603c-7756-493b-8bae-9806e01a2337" category="com.usf.logger" message='#[%dw 2.0 output application/json
+--- 
+{
+	"txnID" : vars.transactionID default "",
+	"txn400EndTime": now(),
+	"resPayload": payload default "",
+	"error": error default ""
+}]'/>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND" enableNotifications="true" logException="true">
+                <logger level="ERROR" doc:name="404ReqLog" doc:id="250e4005-43ba-42de-9b98-9100526c407f" category="com.usf.logger" message='#[%dw 2.0 output application/json
+--- 
+{
+"txn404StartTime": now(),
+"reqPyload": payload,
+"error": error
+}]'/>
+				<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="77a556c6-2dd2-4b7f-9c28-b869569fb057">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+		message: "Resource not found"
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[404]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+			<logger level="ERROR" doc:name="404ResLog" doc:id="703c2a29-69ec-4c98-8be5-2aa0b1b682c2" category="com.usf.logger" message='#[%dw 2.0 output application/json
+--- 
+{
+	"txnID" : vars.transactionID default "",
+	"txn404EndTime": now(),
+	"resPayload": payload default "",
+	"error": error default ""
+}]'/>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <logger level="ERROR" doc:name="405ReqLog" doc:id="ae7279e1-f8c4-4942-9437-c5d70b613e9f" category="com.usf.logger" message='#[%dw 2.0 output application/json
+--- 
+{
+"txn405StartTime": now(),
+"reqPayload": payload,
+"error": error
+}]'/>
+				<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="340ae63d-7640-44d5-8947-16350bdcaad8">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{  
+	message: "Method not allowed"
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[405]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+			<logger level="ERROR" doc:name="405ResLog" doc:id="f5fba383-5f80-4497-b80c-184134939f80" category="com.usf.logger" message='#[%dw 2.0 output application/json
+--- 
+{
+	"txnID" : vars.transactionID default "",
+	"txn405EndTime": now(),
+	"resPayload": payload default "",
+	"error": error default ""
+}]'/>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <logger level="ERROR" doc:name="406ReqLog" doc:id="3fe1591a-c30d-4b3d-9f73-0573ec558dcf" category="com.usf.logger" message='#[%dw 2.0 output application/json
+--- 
+{
+"txn406StartTime": now(),
+"reqPayload": payload,
+"error": error
+}]'/>
+				<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="3d3edfa5-43f7-47ea-94a8-73bbfe325d93">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+	message: "Not acceptable"
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[406]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+			<logger level="ERROR" doc:name="406ResLog" doc:id="6cc30269-0ccd-4fb3-ae05-5aa6201ba412" category="com.usf.logger" message='#[%dw 2.0 output application/json
+--- 
+{
+	"txnID" : vars.transactionID default "",
+	"txn406EndTime": now(),
+	"resPayload": payload default "",
+	"error": error default ""
+}]'/>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <logger level="ERROR" doc:name="415ReqLog" doc:id="a2f70a66-cccb-4e20-9026-ddffb800562d" category="com.usf.logger" message='#[%dw 2.0 output application/json
+--- 
+{
+"txn415StartTime": now(),
+"reqPayload": payload,
+"error": error
+}]'/>
+				<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="e4c9a108-a2a6-4d94-92dd-22ecd92f6815">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{   
+	message: "Unsupported media type"
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[415]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+			<logger level="ERROR" doc:name="415ResLog" doc:id="e7374fd6-9748-4314-a770-e8c24ef7cd65" category="com.usf.logger" message='#[%dw 2.0 output application/json
+--- 
+{
+	"txnID" : vars.transactionID default "",
+	"txn415EndTime": now(),
+	"resPayload": payload default "",
+	"error": error default ""
+
+}]'/>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <logger level="ERROR" doc:name="501ReqLog" doc:id="ec8a113c-1c41-4f7c-9ed7-4b203b7e0e1f" category="com.usf.logger" message='#[%dw 2.0 output application/json
+--- 
+{
+"txnLogSeq": "1-1",
+"txn501StartTime": now(),
+"reqPayload": payload,
+"error": error
+}]'/>
+				<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="43e75515-f5bb-4e92-a733-d6587db0daa8">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+	message: "Not Implemented"
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[501]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+			<logger level="ERROR" doc:name="501ResLog" doc:id="1d2afe22-443d-4077-828b-d3b6b68a09bf" category="com.usf.logger" message='#[%dw 2.0 output application/json
+--- 
+{
+	"txnID" : vars.transactionID default "",
+	"txn501EndTime": now(),
+	"resPayload": payload default "",
+	"error": error default ""
+}]'/>
+            </on-error-propagate>
+            <on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="5b69b149-a089-4161-a9d2-fba4e63f3032" when='vars.exFlag==null and (error.cause.message contains "retry")' type="JMS:RETRY_EXHAUSTED">
+				<set-variable value="1" doc:name="exceptionFlag" doc:id="049a4d6f-ed4a-47dd-acf2-2fa4d72c36aa" variableName="exFlag"/>
+			<set-variable value="500" doc:name="httpStatus" doc:id="4d9c6b79-8125-4587-bee5-6fa357c07204" variableName="httpStatus"/>
+			<logger level="ERROR" doc:name="errReqLog" doc:id="906c4185-089b-42c9-8b5b-ff46ab3f9a6d" category="com.usf.logger" message='#[%dw 2.0 
+output application/json
+--- 
+{
+	"txnID" : vars.transactionID,
+	"txnRequestTime": now(),
+	"reqPayload": payload,
+	"error": error.description
+}]' />
+			<async doc:name="Async" doc:id="3f9f3c8c-fa2c-4ed1-91bb-ce8da3e79236">
+					<http:request method="POST" doc:name="callHpsm" doc:id="014d47b9-9d1e-4798-aeee-91f14a7113e1" url="${hpsmapi.url}">
+						<http:body><![CDATA[#[%dw 2.0
+output application/json
+---
+{	
+	"serviceexdetails": {
+		"exhostname": server.ip,
+		"extimestamp": now(),
+		"extransactionID": correlationId ,
+		"excorrelationID": vars.transactionID ,
+		"exinterfaceID": "${hpsmapi.exception.interface}",
+		"exmessage": "${hpsm.msgsub}" ++  "${api.id}" ++ " MSG-IDENTIFIER: "++ vars.transactionID ++" Error Type:"++ (error.errorType.parentErrorType.identifier default "") ++" Details:"++ (error.detailedDescription default ""),
+        "exCode": "${hpsmapi.exception.code}",
+	    "exstacktrace": (error.cause.message default "") ++ (error.exception.stackTrace[0] default "")
+	}
+}]]]></http:body>
+						<http:headers><![CDATA[#[output application/java
+---
+{
+	"transaction-id" : vars.transactionID,
+	"consumer-id" : "${hpsmapi.conid}",
+	"client_id" : "${hpsmapi.clientid}",
+	"client_secret" : "${secure::hpsmapi.secrete}"
+}]]]></http:headers>
+					</http:request>
+				</async>
+				<ee:transform doc:name="Transform Message" doc:id="4cd38a5f-b30e-48d7-94b0-3f7a3b7e2481" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+	message: error.cause.localizedMessage
+}]]></ee:set-payload>
+					</ee:message>
+				<ee:variables >
+				</ee:variables>
+				</ee:transform>
+			<logger level="ERROR" doc:name="errResLog" doc:id="d58eec64-4624-49fc-959d-7fbbae170e8b" category="com.usf.logger" message='#[%dw 2.0 
+output application/json
+--- 
+{
+	"txnID" : vars.transactionID default "",
+	"txnHPSMendTime": now(),
+	"resPayload": payload default "",
+	"error": error.description default ""
+}]'/>
+			</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e0ac2622-e3e3-4969-84b3-7f6c85ab41c9" type="ANY" when="1==1">
+			<ee:transform doc:name="Transform Message" doc:id="ea87e6c7-8352-4d9b-bce9-f4364a85abb5" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: error.cause.localizedMessage	
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="ERROR" doc:name="defaultLogger" doc:id="2e807aaa-3701-4585-82da-d17aea055032" message='#[%dw 2.0
+output application/json
+---
+{
+	"txnID" : vars.transactionID default "",
+	"txnDefaultendTime": now(),
+	"error": error.description default ""
+}]' category="com.usf.logger"/>
+		</on-error-propagate>
+        </error-handler>
+</mule>

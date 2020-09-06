@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 sp2 (http://www.altova.com) by Krishnan Chirchabesan (Tescra) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pim-abbreviation="urn:pim-abbreviation" targetNamespace="urn:pim-abbreviation" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="Abbreviation">
+		<xs:annotation>
+			<xs:documentation>Comment describing your root element</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="foobar" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

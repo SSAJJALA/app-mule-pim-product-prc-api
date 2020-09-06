@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 sp2 (http://www.altova.com) by Krishnan Chirchabesan (Tescra) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pim-constants="urn:pim-constants" targetNamespace="urn:pim-constants" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="Product_ASysConstants">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="prpi0aaa_filler1" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_msg_severity" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_return_code" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpioaaa_return_msg_text" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_star_minor" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_star_label" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_star_source" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_star_repack" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_whse_conv" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_price_conv" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_govmt_conv" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_foam" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_convey" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_prtry_grp" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_pattern" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_color" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_mtrl_exp_dt" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_tech_name_1" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_tech_name_2" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_level_code1" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_level_code2" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_level_code3" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_level_code4" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_level_code5" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_level_code6" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_level_code7" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_level_code8" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_level_code9" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_level_code10" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_nesting_indic" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_nesting_cube" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_comment_ind" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_dormant_ind" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aaa_kraft_mfr" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aca_filler1" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aca_msg_severity" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aca_return_code" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aca_return_msg_text" type="xs:string" minOccurs="0"/>
+				<xs:element name="filler1" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0ada_msg_severity" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0ada_return_code" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0ada_return_msg_text" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aha_msg_severity" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aha_return_code" type="xs:string" minOccurs="0"/>
+				<xs:element name="prpi0aha_return_msg_text" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Division_Attach_Constants">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="pim-constants:Division_Attach_PSysConstants" minOccurs="0"/>
+				<xs:element ref="pim-constants:Division_Attach_ASysConstants" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Brand_Constants">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="foobar"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Hazmat_Constants">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="foobar"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Product_Constants">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="pim-constants:Product_PSysConstants" minOccurs="0"/>
+				<xs:element ref="pim-constants:Product_ASysConstants" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Abbreviation_Constants">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="foobar"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Product_PSysConstants">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ppmiwpim_filler1" type="xs:string" nillable="true" minOccurs="0"/>
+				<xs:element name="ppmiwpim_msg_severity" type="xs:string" minOccurs="0"/>
+				<xs:element name="ppmiwpim_return_code" type="xs:string" minOccurs="0"/>
+				<xs:element name="ppmiwpim_return_msg_text" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_rec_type" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_dt_lasupd" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ap_vend01" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ap_vend02" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ap_vend03" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ap_vend04" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ap_vend05" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ap_vend06" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ap_vend07" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ap_vend08" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ap_vend09" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ap_vend10" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ap_vend11" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ap_vend12" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ap_vend13" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ap_vend14" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_alt_code" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_comment" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_sl_fam_gr" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_dt_added" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_br_code" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_prod_num_api" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_api_match" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_fill1" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_prod_ifda_mfgid" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_prod_ifda_prdcd" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqp_adf_catg" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_prod_pack_count" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_prod_prom_ind" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_prod_lock_ind" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_upc_code" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_lassls_dt" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_prod_pcs_in_cse" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_fill2" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hqprd_ifda" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_vend_presold_in" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hq_com_code" type="xs:string" minOccurs="0"/>
+				<xs:element name="pim_hcp_elm1_fill3" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Division_Attach_ASysConstants">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="foobar"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Division_Attach_PSysConstants">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="foobar"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

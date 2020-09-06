@@ -1,0 +1,10 @@
+#%RAML 1.0 Trait
+headers:
+  consumer-id:
+    description: Unique identifier used to identify consuming application for example, Alfresco
+    type: string
+    required: true
+  transaction-id:
+    description: Unique value for each API request sent by consuming application for logging tracing.
+    type: string
+    required: true

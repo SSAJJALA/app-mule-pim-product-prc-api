@@ -1,0 +1,690 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+	<sub-flow name="publish-product-information-subflow" doc:id="d784b57b-0cc0-4e5d-85e2-3d5b129e3e9d" >
+		<logger level="INFO" doc:name="entryLogger" doc:id="0238cb09-c1ec-468e-89ec-8769fb0ce802" message="#[%dw 2.0 output
+application/json
+--- 
+{
+&quot;txnID&quot; : attributes.headers.'transaction-id' default &quot;&quot;,
+&quot;txnLogSeq&quot;: &quot;1-apiEntry&quot;,
+&quot;txnapiStartTime&quot;: now(),
+&quot;reqPayload&quot;: payload default &quot;&quot;
+}]" category="com.usf.logger"/>
+		<set-variable value="#[attributes.headers.'transaction-id']" doc:name="transactionID" doc:id="519235f4-282c-47de-91ec-0a5252b13452" variableName="transactionID"/>
+		<ee:transform doc:name="mapJsonToTibcoXML" doc:id="6832f5f7-8bbd-4342-81d3-ed7db7a59826" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 urn:pim-eai
+ns ns01 urn:ePIM2
+ns ns02 urn:pim-xref
+ns ns03 urn:pim-secondary
+---
+{
+	ns0#PIM_Transaction: {
+		ns0#Header: {
+			ns0#trans_id: payload.header.transId,
+			ns0#request_type: payload.header.requestType,
+			ns0#trans_type: payload.header.transType,
+			ns0#userid: payload.header.userid,
+			ns0#eff_date: payload.header.effDate,
+			ns0#clone_type: payload.header.cloneType,
+			ns0#isResubmit: payload.header.isResubmit
+		},
+		ns0#"eai-products": {
+			(payload.products map ( product , indexOfProduct ) -> {
+				ns0#"eai-product": {
+					ns0#state: product.state,
+					ns01#Product: {
+						ns01#Product_Key: {
+							ns01#GTIN: product.gtin,
+							ns01#GLN_Of_Information_Provider: product.glnOfInformationProvider,
+							ns01#Target_Market_Country_Code: product.targetMarketCountryCode
+						},
+						ns01#GDD_Fields: {
+							ns01#Bar_Code_Type: product.barCodeType,
+							ns01#Brand_Name: product.brandRecord.brandName,
+							ns01#Brand_Type: product.brandRecord.brandType,
+							ns01#Brand_Owner_Name: product.brandRecord.brandOwnerName,
+							ns01#Canceled_Date: product.canceledDate,
+							ns01#Catalogue_Price: product.cataloguePrice,
+							ns01#Catalogue_Price_Effective_End_Date: product.cataloguePriceEffectiveEndDate,
+							ns01#Catalogue_Price_Effective_Start_Date: product.cataloguePriceEffectiveStartDate,
+							ns01#Class_Of_Dangerous_Goods: product.classOfDangerousGoods,
+							ns01#Color_Code_List_Agency: product.colorCodeListAgency,
+							ns01#Color_Code_Value: product.colorCodeValue,
+							ns01#Color_Description: product.colorDescription,
+							ns01#Consumer_Availability_Date_Time: product.consumerAvailabilityDateTime,
+							ns01#Country_Of_Origin: product.countryOfOrigin,
+							ns01#Coupon_Family_Code: product.couponFamilyCode,
+							ns01#Dangerous_Goods_Hazardous_Code: product.hazmatRecord.dangerousGoodsHazardousCode,
+							ns01#Dangerous_Goods_Indicator: product.hazmatRecord.dangerousGoodsIndicator,
+							ns01#Dangerous_Goods_Margin_Number: product.hazmatRecord.dangerousGoodsMarginNumber,
+							ns01#Dangerous_Goods_Packing_Group: product.hazmatRecord.dangerousGoodsPackingGroup,
+							ns01#Dangerous_Goods_Regulation_Code: product.hazmatRecord.dangerousGoodsRegulationCode,
+							ns01#Dangerous_Goods_Shipping_Name: product.hazmatRecord.dangerousGoodsShippingName,
+							ns01#Dangerous_Goods_Technical_Name: product.hazmatRecord.dangerousGoodsTechnicalName,
+							ns01#Degree_Of_Original_Wort_FMCG: product.degreeOfOriginalWortFmcg,
+							ns01#Delivery_Method_Indicator: product.deliveryMethodIndicator,
+							ns01#Delivery_To_Distribution_Center_Temperature_Maximum: product.pimGroupRecord.rreMaximumTemperature,
+							ns01#Delivery_To_Distribution_Center_Temperature_Minimum: product.pimGroupRecord.rreMinimumTemperature,
+							ns01#Delivery_To_Market_Temperature_Maximum: product.deliveryToMarketTemperatureMaximum,
+							ns01#Delivery_To_Market_Temperature_Minimum: product.deliveryToMarketTemperatureMinimum,
+							ns01#Department_Of_Transportation_Dangerous_Goods_Number_HL: product.hazmatRecord.departmentOfTransportationDangerousGoodsNumberHl,
+							ns01#Description_Additional: product.productContentManagementRecord.descriptionAdditional,
+							ns01#Descriptive_Size: product.descriptiveSize,
+							ns01#Diameter: product.diameter,
+							ns01#Discontinued_Date: product.discontinuedDate,
+							ns01#Drained_Weight: product.drainedWeight,
+							ns01#End_Availability_Date_Time: product.endAvailabilityDateTime,
+							ns01#Fat_Percentage_In_Dry_Matter_FMCG: product.fatPercentageInDryMatterFmcg,
+							ns01#Flash_Point_Temperature: product.flashPointTemperature,
+							ns01#Functional_Name: product.functionalName,
+							ns01#FMCG_Identification_Number: product.fmcgIdentificationNumber,
+							ns01#FMCG_Identification_Type: product.fmcgIdentificationType,
+							ns01#Generic_Ingredient: product.genericIngredient,
+							ns01#Generic_Ingredient_Strength: product.genericIngredientStrength,
+							ns01#GLN_Of_Brand_Owner: product.glnOfBrandOwner,
+							ns01#GLN_Of_Content_Owner: product.glnOfContentOwner,
+							ns01#GLN_Of_Manufacturer: product.glnOfManufacturer,
+							ns01#GLN_Of_Parties_Receiving_Private_Data: product.glnOfPartiesReceivingPrivateData,
+							ns01#GLN_Of_Representing_Party: product.glnOfRepresentingParty,
+							ns01#GLN_Of_Source_Data_Pool: product.glnOfSourceDataPool,
+							ns01#GPC_Code: product.gpcCode,
+							ns01#GPC_Definition: product.gpcDefinition,
+							ns01#GPC_Name: product.gpcName,
+							ns01#Gross_Weight: product.grossWeight,
+							ns01#Handling_Instructions_Code: product.handlingInstructionsCode,
+							ns01#Harmonized_Tariff_System_Identification_Code_HL: product.harmonizedTariffSystemIdentificationCodeHl,
+							ns01#Has_Batch_Number: product.hasBatchNumber,
+							ns01#Industry: product.pimGroupRecord.industry,
+							ns01#Ingredient_Strength: product.ingredientStrength,
+							ns01#Is_Bar_Code_Symbology_Derivable: product.isBarCodeSymbologyDerivable,
+							ns01#Is_Ingredient_Irradiated_FMCG: product.isIngredientIrradiatedFmcg,
+							ns01#Is_Item_A_Consumer_Unit: product.isItemAConsumerUnit,
+							ns01#Is_Item_A_Dispatch_Unit_Shipping: product.isItemADispatchUnitShipping,
+							ns01#Catch_Weight_Item: product.catchWeightItem,
+							ns01#Is_Item_An_Invoice_Unit: product.isItemAnInvoiceUnit,
+							ns01#Is_Item_An_Orderable_Unit: product.isItemAnOrderableUnit,
+							ns01#Is_Net_Content_Declaration_Indicated: product.isNetContentDeclarationIndicated,
+							ns01#Is_Non_Sold_Trade_Item_Returnable: product.isNonSoldTradeItemReturnable,
+							ns01#Is_Packaging_Marked_As_Recyclable: product.isPackagingMarkedAsRecyclable,
+							ns01#Is_Packaging_Marked_Returnable: product.isPackagingMarkedReturnable,
+							ns01#Is_Packaging_Marked_With_Expiration_Date: product.isPackagingMarkedWithExpirationDate,
+							ns01#Is_Packaging_Marked_With_Green_Dot: product.isPackagingMarkedWithGreenDot,
+							ns01#Is_Packaging_Marked_With_Ingredients: product.isPackagingMarkedWithIngredients,
+							ns01#Is_Raw_Material_Irradiated_FMCG: product.isRawMaterialIrradiatedFmcg,
+							ns01#Is_Reload: product.isReload,
+							ns01#Is_Trade_Item_Genetically_Modified_FMCG: product.isTradeItemGeneticallyModifiedFmcg,
+							ns01#Is_Trade_Item_Irradiated_FMCG: product.isTradeItemIrradiatedFmcg,
+							ns01#Is_Trade_Item_Marked_As_Recyclable: product.isTradeItemMarkedAsRecyclable,
+							ns01#Is_Trade_Item_Recalled_HL: product.isTradeItemRecalledHl,
+							ns01#Is_UPC_Derivable_From_GTIN: product.isUpcDerivableFromGtin,
+							ns01#ISBN_Number_FMCG: product.isbnNumberFMCG,
+							ns01#ISSN_Number_FMCG: product.issnNumberFMCG,
+							ns01#Linear_Units: product.linearUnits,
+							ns01#Manufacturer_Product_Number: product.manufacturerProductNumber,
+							ns01#Material_Safety_Data_Sheet_Number: product.hazmatRecord.materialSafetyDataSheetNumber,
+							ns01#Minimum_Trade_Item_Lifespan_From_Time_of_Arrival: product.minimumTradeItemLifespanFromTimeOfArrival,
+							ns01#Model_Number_HL: product.modelNumberHl,
+							ns01#Name_Of_Information_Provider: product.nameOfInformationProvider,
+							ns01#Manufacturer_Name: product.manufacturerName,
+							ns01#Name_Of_Source_Data_Pool: product.nameOfSourceDataPool,
+							ns01#Nesting_Increment_HL: product.nestingIncrementHl,
+							ns01#Net_Content: product.netContent,
+							ns01#Net_Content_UOM: product.netContentUom,
+							ns01#Net_Weight: product.netWeight,
+							ns01#Order_Quantity_Maximum: product.orderQuantityMaximum,
+							ns01#Order_Quantity_Minimum: product.orderQuantityMinimum,
+							ns01#Order_Quantity_Multiple: product.orderQuantityMultiple,
+							ns01#Order_Sizing_Factor: product.orderSizingFactor,
+							ns01#Order_Sizing_Factor_UOM: product.orderSizingFactorUom,
+							ns01#Ordering_Lead_Time: product.orderingLeadTime,
+							ns01#Ordering_UOM_HL: product.orderingUomHl,
+							(product.claimRecords map ( claimRecord , indexOfClaimRecord ) ->{
+								(ns01#Organic_Claim_Agency: claimRecord.certificationAgency) if(trim(claimRecord.claimName) == "Organic Certified")
+							}),
+							ns01#Out_Of_Box_Depth_HL: product.outOfBoxDepthHl,
+							ns01#Out_Of_Box_Height_HL: product.outOfBoxHeightHl,
+							ns01#Out_Of_Box_Width_HL: product.outOfBoxWidthHl,
+							ns01#Packaging_Material_Code: product.packagingMaterialCode,
+							ns01#Packaging_Material_Code_List_Maintenance_Agency: product.packagingMaterialCodeListMaintenanceAgency,
+							ns01#Packaging_Material_Composition_Quantity: product.packagingMaterialCompositionQuantity,
+							ns01#Packaging_Material_Composition_UOM: product.packagingMaterialCompositionUom,
+							ns01#Packaging_Terms_And_Conditions: product.packagingTermsAndConditions,
+							ns01#Packaging_Type_Code: product.packagingTypeCode,
+							ns01#Pallet_Terms_And_Conditions: product.palletTermsAndConditions,
+							ns01#Pallet_Type_Code: product.palletTypeCode,
+							ns01#Peg_Horizontal: product.pegHorizontal,
+							ns01#Peg_Vertical: product.pegVertical,
+							(product.claimRecords map ( claimRecord , indexOfClaimRecord ) ->{
+								(ns01#Percentage_Of_Alcohol_By_Volume_FMCG: product.claimRecords.claimValue) if(trim(claimRecord.claimName) == "(REMOVED) Percentage Of Alcohol By Volume")
+							}),
+							ns01#Pieces_Per_Trade_Item_HL: product.piecesPerTradeItemHl,
+							ns01#PIM_Add_Date: product.pimAddDate,
+							ns01#Product_Description_Customer_Proprietary: product.productDescriptionCustomerProprietary,
+							ns01#Product_Description_Laptop: product.productDescriptionLaptop,
+							ns01#Product_Range: product.productRange,
+							ns01#Publication_Date: product.publicationDate,
+							ns01#Quantity_Of_Children: product.quantityOfChildren,
+							ns01#Quantity_Of_Complete_Layers_Contained_In_A_Trade_Item: product.quantityOfCompleteLayersContainedInATradeItem,
+							ns01#Quantity_Of_Inner_Pack: product.quantityOfInnerPack,
+							ns01#Quantity_Of_Layers_Per_Pallet: product.quantityOfLayersPerPallet,
+							ns01#Quantity_Of_Next_Level_Trade_Item_Within_Inner_Pack: product.quantityOfNextLevelTradeItemWithinInnerPack,
+							ns01#Quantity_Of_Next_Lower_Trade_Item: product.quantityOfNextLowerLevelTradeItem,
+							ns01#Quantity_Of_Trade_Items_Contained_In_A_Complete_Layer: product.quantityOfTradeItemsContainedInACompleteLayer,
+							ns01#Quantity_Of_Trade_Items_Per_Pallet: product.quantityOfTradeItemsPerPallet,
+							ns01#Quantity_Of_Trade_Items_Per_Pallet_Layer: product.quantityOfTradeItemsPerPalletLayer,
+							ns01#Replaced_Trade_Item_GTIN: product.replacedTradeItemGtin,
+							ns01#Retail_Price_On_Trade_Item: product.retailPriceOnTradeItem,
+							ns01#Return_Goods_Policy_HL: product.returnGoodsPolicyHl,
+							ns01#Sales_Pack_Depth: product.salesPackDepth,
+							ns01#Sales_Pack_Height: product.salesPackHeight,
+							ns01#Sales_Pack_Width: product.salesPackWidth,
+							ns01#Security_Tag_Location_HL: product.securityTagLocationHl,
+							ns01#Selling_UOM_HL: product.sellingUomHl,
+							ns01#Size_Code_List_Agency: product.sizeCodeListAgency,
+							ns01#Size_Code_Value: product.sizeCodeValue,
+							ns01#Stacking_Factor: product.stackingFactor,
+							ns01#Stacking_Weight_Maximum: product.stackingWeightMaximum,
+							ns01#Start_Availabilty_Date_Time: product.startAvailabiltyDateTime,
+							ns01#Storage_Handling_Temperature_Minimum: product.storageHandlingTemperatureMinimum,
+							ns01#Storage_Handling_Temperature_Maximum: product.storageHandlingTemperatureMaximum,
+							ns01#Sub_Brand: product.subBrand,
+							ns01#Suggested_Retail_Price: product.suggestedRetailPrice,
+							ns01#Target_Market_Subdivision_Code: product.targetMarketSubdivisionCode,
+							ns01#Tax_Agency_Code: product.taxRecord.taxAgencyCode,
+							ns01#Tax_Amount: product.taxRecord.taxAmount,
+							ns01#Tax_Rate: product.taxRecord.taxRate,
+							ns01#Tax_Type_Code: product.taxRecord.taxTypeCode,
+							ns01#Tax_Type_Description: product.taxRecord.taxTypeDescription,
+							ns01#Temperature_UOM: product.temperatureUom,
+							ns01#Total_Quantity_Of_Next_Lower_Level_Trade_Item: product.totalQuantityOfNextLowerLevelTradeItem,
+							ns01#Trade_Item_Finish_Description_HL: product.tradeItemFinishDescriptionHl,
+							ns01#Trade_Item_Form_Description: product.tradeItemFormDescription,
+							ns01#Trade_Item_Group_Identification_Code: product.tradeItemGroupIdentificationCode,
+							ns01#Trade_Item_Group_Identification_Description: product.tradeItemGroupIdentificationDescription,
+							ns01#Trade_Item_Identification_Of_Next_Lower_Trade_Item: product.tradeItemIdentificationOfNextLowerTradeItem,
+							ns01#Trade_Item_Import_Classification_Type: product.tradeItemImportClassificationType,
+							ns01#Trade_Item_Import_Classification_Value: product.tradeItemImportClassificationValue,
+							ns01#Sales_UOM: product.salesUom,
+							ns01#UDEX_Category_Code: product.pimGroupRecord.udexCategoryCode,
+							ns01#UN_Dangerous_Goods_Number: product.hazmatRecord.unDangerousGoodsNumber,
+							ns01#UPC_Code: product.upcCode,
+							ns01#UPC_Type: product.upcType,
+							ns01#URL_For_Warranty_HL: product.urlForWarrantyHl,
+							ns01#Variant: product.variant,
+							ns01#Volume: product.volume,
+							ns01#Volume_Units: product.volumeUnits,
+							ns01#Warranty_Description_HL: product.warrantyDescriptionHl,
+							ns01#Weight_Units: product.weightUnits
+						},
+						ns01#Custom_Fields: {
+							ns01#Alert_Notice_Days: product.alertNoticeDays,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Alcohol: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Alcohol'),
+								(ns01#Alcohol_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Alcohol'),
+								(ns01#Ash: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Ash'),
+								(ns01#Ash_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Ash')
+							}),
+							ns01#Approved_Manufacturers: product.approvedManufacturers,
+							ns01#ASYS_Product_Group: product.pimGroupRecord.productGroupCode,
+							ns01#Attribute_Type_1: product.attributeType1,
+							ns01#Attribute_Type_10: product.attributeType10,
+							ns01#Attribute_Type_2: product.attributeType2,
+							ns01#Attribute_Type_3: product.attributeType3,
+							ns01#Attribute_Type_4: product.attributeType4,
+							ns01#Attribute_Type_5: product.attributeType5,
+							ns01#Attribute_Type_6: product.attributeType6,
+							ns01#Attribute_Type_7: product.attributeType7,
+							ns01#Attribute_Type_8: product.attributeType8,
+							ns01#Attribute_Type_9: product.attributeType9,
+							ns01#Attribute_Value_1: product.attributeValue1,
+							ns01#Attribute_Value_10: product.attributeValue10,
+							ns01#Attribute_Value_2: product.attributeValue2,
+							ns01#Attribute_Value_3: product.attributeValue3,
+							ns01#Attribute_Value_4: product.attributeValue4,
+							ns01#Attribute_Value_5: product.attributeValue5,
+							ns01#Attribute_Value_6: product.attributeValue6,
+							ns01#Attribute_Value_7: product.attributeValue7,
+							ns01#Attribute_Value_8: product.attributeValue8,
+							ns01#Attribute_Value_9: product.attributeValue9,
+							ns01#Attribute_Value_Add_Type_1: product.attributeValueAddType1,
+							ns01#Attribute_Value_Add_Type_2: product.attributeValueAddType2,
+							ns01#Attribute_Value_Add_Value_1: product.attributeValueAddValue1,
+							ns01#Attribute_Value_Add_Value_2: product.attributeValueAddValue2,
+							ns01#Beef_Grade: product.beefGrade,
+							ns01#Bill_Of_Lading_Code: product.pimGroupRecord.billOfLadingCode,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Biotin: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Biotin'),
+								(ns01#Biotin_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Biotin'),
+								(ns01#Biotin_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Biotin'),
+								(ns01#Calcium: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Calcium'),
+								(ns01#Calcium_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Calcium'),
+								(ns01#Calcium_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Calcium'),
+								(ns01#Calories: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Calories'),
+								(ns01#Calories_from_fat: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Calories'),
+								(ns01#Calories_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Calories'),
+								(ns01#Calories_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Calories'),
+								(ns01#Carbohydrates: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Carbohydrates'),
+								(ns01#Carbohydrates_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Carbohydrates'),
+								(ns01#Carbohydrates_UOM: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Carbohydrates')
+							}),
+							ns01#Case_Image: product.caseImage,
+							(product.claimRecords map ( claimRecord , indexOfClaimRecord ) ->{
+								(ns01#Certified_Angus_Beef_CAB: claimRecord.claimValue) if(trim(claimRecord.claimName) == "Certified Angus Beef (CAB)")
+							}),
+							ns01#Child_Nutrition_Certificate: product.childNutritionLabelRecords.childNutritionCertificate,
+							ns01#Child_Nutrition_Certification: product.childNutritionLabelRecords.childNutritionCertification,
+							ns01#Child_Nutrition_Certification_Number: product.childNutritionLabelRecords.childNutritionCertificationNumber,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Cholesterol: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Cholesterol'),
+								(ns01#Cholesterol_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Cholesterol'),
+								(ns01#Cholesterol_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Cholesterol')
+							}),
+							ns01#Commodity_Product_Indicator: product.commodityProductIndicator,
+							ns01#Composite_Image: product.compositeImage,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Copper: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Copper'),
+								(ns01#Copper_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Copper'),
+								(ns01#Copper_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Copper')
+							}),
+							ns01#Derived_ASYS_Brand_Name: product.brandRecord.derivedAsysBrandName,
+							ns01#Derived_PSYS_Brand_Name: product.brandRecord.derivedPsysBrandName,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Dietary_Fiber: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Dietary Fiber'),
+								(ns01#Dietary_Fiber_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Dietary Fiber'),
+								(ns01#Dietary_Fiber_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Dietary Fiber')
+							}),
+							ns01#Edible_Percent: product.ediblePercent,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Energy: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Energy'),
+								(ns01#Energy_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Energy')
+							}),
+							ns01#Expiration_Code_Basis: product.expirationCodeBasis,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Folate: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Folate'),
+								(ns01#Folate_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Folate'),
+								(ns01#Folate_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Folate')
+							}),
+							ns01#Ground_Transportation_Hazard_Code: product.hazmatRecord.groundTransportationHazardCode,
+							ns01#Handling_Instructions_Text: product.handlingInstructionsText,
+							ns01#Hazardous_Agency_Indicator: product.hazmatRecord.hazardousAgencyIndicator,
+							ns01#Hazardous_Class_Description: product.hazmatRecord.hazardousClassDescription,
+							(ns01#Hazardous_Goods_Sub_Class: product.hazmatRecord.hazardousGoodsSubClass) if(sizeOf(product.hazmatRecord.hazardousGoodsSubClass)>0),
+							ns01#Hazardous_OSHA_Class_Code: product.hazmatRecord.hazardousOshaClassCode,
+							ns01#Hazardous_Product_DOT_Exception: product.hazmatRecord.hazardousProductDotException,
+							ns01#Hazardous_Reportable_Quantity_Indicator: product.hazmatRecord.hazardousReportableQuantityIndicator,
+							ns01#Hazardous_Response_Guide: product.hazmatRecord.hazardousResponseGuide,
+							ns01#Hazardous_UOM: product.hazmatRecord.hazardousUom,
+							ns01#Hazmat_Questioner: product.hazmatRecord.hazmatQuestioner,
+							ns01#Headquarters_Family_Group: product.headquartersFamilyGroup,
+							ns01#IFDA_Class: product.pimGroupRecord.ifdaClass,
+							ns01#IFDA_Manufacturer_ID: product.ifdaManufacturerId,
+							ns01#IFDA_Manufacturer_Product_Number: product.ifdaManufacturerProductNumber,
+							ns01#Image_Availability_Indicator: product.imageAvailabilityIndicator,
+							ns01#Inner_Pack_Quantity: product.innerPackQuantity,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Iodine: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Iodine'),
+								(ns01#Iodine_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Iodine'),
+								(ns01#Iodine_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Iodine')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Iron: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Iron'),
+								(ns01#Iron_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Iron'),
+								(ns01#Iron_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Iron'),
+								(ns01#Insoluble_Fiber: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Insoluble Fiber'),
+								(ns01#Insoluble_Fiber_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Insoluble Fiber'),
+								(ns01#Insoluble_Fiber_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Insoluble Fiber')
+							}),
+							ns01#Item_Image: product.itemImage,
+							(product.claimRecords map ( claimRecord , indexOfClaimRecord ) ->{
+								(ns01#Kosher_Certification_Number: claimRecord.certificationNumber) if(trim(claimRecord.claimName) == "Kosher Certified"),
+								(ns01#Kosher_Expiration_Date: claimRecord.cerficationEndDate) if(trim(claimRecord.claimName) == "Kosher Certified"),
+								(ns01#Kosher_Indicator: claimRecord.claimValue) if(trim(claimRecord.claimName) == "Kosher Certified"),
+								(ns01#Kosherorganization: claimRecord.certificationAgency) if(trim(claimRecord.claimName) == "Kosher Certified")
+							}),
+							ns01#Juicepct: product.juicepct,
+							ns01#Last_update_date: product.lastUpdateDate,
+							ns01#Lowest_Level_Product_Hierarchy_Derived_Pack_Size: product.lowestLevelProductHierarchyDerivedPackSize,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Magnesium: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Magnesium'),
+								(ns01#Magnesium_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Magnesium'),
+								(ns01#Magnesium_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Magnesium')
+							}),
+							ns01#Manufacturer_HI: product.manufacturerHi,
+							ns01#Manufacturer_Minority_Code: product.manufacturerMinorityCode,
+							ns01#Manufacturer_Minority_Code_Description: product.manufacturerMinorityCodeDescription,
+							ns01#Manufacturer_Number: product.manufacturerNumber,
+							ns01#Manufacturer_TI: product.manufacturerTi,
+							ns01#Marketing_Image: product.marketingImage,
+							ns01#Master_Pack_Quantity: product.masterPackQuantity,
+							ns01#Material_Safety_Data_Sheet: product.materialSafetyDataSheet,
+							ns01#Meat_Buyers_Guide_Number: product.meatBuyersGuideNumber,
+							ns01#Moisture_Loss: product.moistureLoss,
+							ns01#Modification_Type: product.modificationType,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Monunsaturated_Fat: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Monounsaturated Fat'),
+								(ns01#Monunsaturated_Fat_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Monounsaturated Fat'),
+								(ns01#Monunsaturated_Fat_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Monounsaturated Fat')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Niacin: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Niacin'),
+								(ns01#Niacin_Equivalent: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Niacin Equivalent'),
+								(ns01#Niacin_Equivalent_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Niacin Equivalent'),
+								(ns01#Niacin_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Niacin'),
+								(ns01#Niacin_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Niacin')
+							}),
+							ns01#Nutritional_Update_Date: product.nutritionalUpdateDate,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Omega_3_Acids: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Omega 3 Acids'),
+								(ns01#Omega_6_Acids: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Omega_6_Acids'),
+								(ns01#Omega_3_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Omega 3 Acids'),
+								(ns01#Omega_6_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Omega_6_Acids')
+							}),
+							(product.claimRecords map ( claimRecord , indexOfClaimRecord ) ->{
+								(ns01#Organic: claimRecord.claimValue) if(trim(claimRecord.claimName) == "Organic Certified")
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Organic_Acids: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Organic Acids'),
+								(ns01#Organic_Acids_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Organic Acids')
+							}),
+							ns01#Operator_Comments: product.operatorComments,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Pantothenic_Acid: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Pantothenic Acid'),
+								(ns01#Pantothenic_Acid_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Pantothenic Acid'),
+								(ns01#Pantothenic_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Pantothenic Acid')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Phosphorous: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Phosphorous'),
+								(ns01#Phosphorous_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Phosphorous'),
+								(ns01#Phosphorous_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Phosphorous')
+							}),
+							ns01#Picture_Path: product.picturePath,
+							ns01#PIM_Category_ID: product.pimGroupRecord.pimCategoryId,
+							ns01#PIM_Class_ID: product.pimGroupRecord.pimClassId,
+							ns01#PIM_Group_Description: product.pimGroupRecord.pimGroupDescription,
+							ns01#PIM_Group_ID: product.pimGroupId,
+							ns01#PIM_Group_Keywords: product.pimGroupRecord.pimGroupKeywords,
+							ns01#PIM_Super_Class_ID: product.pimGroupRecord.pimSuperClassId,
+							ns01#Product_Master_Number: product.productMasterNumber,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Protein: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Protein'),
+								(ns01#Polyunsaturated_Fat: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Polyunsaturated Fat'),
+								(ns01#Polyunsaturated_Fat_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Polyunsaturated Fat'),
+								(ns01#Polyunsaturated_Fat_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Polyunsaturated Fat')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Potassium: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Potassium'),
+								(ns01#Potassium_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Potassium'),
+								(ns01#Potassium_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Potassium')
+							}),
+							ns01#Preparation_Instructions: product.productContentManagementRecord.preparationInstructions,
+							(ns01#Product_Code_On_BOL: product.productCodeOnBol) if(sizeOf(product.productCodeOnBol)>0),
+							ns01#Product_Code_Printing: product.productCodePrinting,
+							ns01#Product_Code_Type: product.productCodeType,
+							ns01#Product_Description_Psys_Mainframe: product.productDescriptionPsysMainframe,
+							ns01#Cash_and_Carry_Eligible: product.cashAndCarryEligible,
+							ns01#Retail_UPC: product.retailUpc,
+							ns01#Product_Description_USF: product.productDescriptionUsf,
+							ns01#Product_Segmentation_Effective_Date: product.productSegmentationEffectiveDate,
+							ns01#Product_Segmentation_Level_One: product.productSegmentationLevelOne,
+							ns01#Product_Segmentation_Level_Three: product.productSegmentationLevelThree,
+							ns01#Product_Segmentation_Level_Two: product.productSegmentationLevelTwo,
+							ns01#Product_Status: product.productStatus,
+							ns01#Product_update_Indicator: product.productUpdateIndicator,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Protein_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Protein'),
+								(ns01#Protein_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Protein'),
+							}),
+							ns01#Purchasing_Conversion_Factor: product.purchasingConversionFactor,
+							ns01#Purchase_Pack_Depth: product.purchasePackDepth,
+							ns01#Purchase_Pack_Height: product.purchasePackHeight,
+							ns01#Purchasing_Pack_Size_Description: product.purchasingPackSizeDescription,
+							ns01#Purchase_Pack_UOM: product.purchasePackUom,
+							ns01#Purchase_Pack_Width: product.purchasePackWidth,
+							ns01#Quantity_Of_Portions: product.quantityOfPortions,
+							ns01#Quantity_Of_Portions_UOM: product.quantityOfPortionsUom,
+							ns01#Quantity_Of_Second_Level_Inner_Pack: product.quantityOfSecondLevelInnerPack,
+							ns01#Ready_To_Eat_Product_Indicator: product.readyToEatProductIndicator,
+							ns01#Ready_To_Eat_Temperature_Check_Required_Indicator: product.readyToEatTemperatureCheckRequiredIndicator,
+							ns01#Recommended_Serving_Size: product.recommendedServingSize,
+							ns01#Recommended_Serving_Size_UOM: product.recommendedServingSizeUom,
+							ns01#Replaced_By: product.replacedBy,
+							(ns01#Replacement_USF_Product_Number: product.replacementUsfProductNumber) if(sizeOf(product.replacementUsfProductNumber)>0),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Riboflavin: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Riboflavin'),
+								(ns01#Riboflavin_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Riboflavin'),
+								(ns01#Riboflavin_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Riboflavin')
+							}),
+							ns01#Sales_Pack_Size_Long: product.salesPackSizeLong,
+							ns01#Sales_Pack_Size_Short: product.salesPackSizeShort,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Saturated_Fat: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Saturated Fat'),
+								(ns01#Saturated_Fat_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Saturated Fat'),
+								(ns01#Saturated_Fat_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Saturated Fat')
+							}),
+							(ns01#Servings_Per_Trade_Item: product.servingPerTradeItem) if(sizeOf(product.servingPerTradeItem)>0),
+							ns01#Serving_size: product.servingSize,
+							ns01#Serving_size_type: product.servingSizeType,
+							ns01#Serving_size_UOM: product.servingSizeUom,
+							ns01#Serving_Suggestions: product.servingSuggestions,
+							ns01#Shelf_Life: product.shelfLife,
+							ns01#Shelf_Life_UOM: product.shelfLifeUom,
+							ns01#Smallest_Sales_Pack_Quantity: product.smallestSalesPackQuantity,
+							(ns01#Smallest_Sales_Pack_USF_Product_Number: product.smallestSalesPackUsfProductNumber) if(sizeOf(product.smallestSalesPackUsfProductNumber)>0),
+							ns01#Smallest_Sales_Pack_Unit: product.smallestSalesPackUnit,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Sodium: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Sodium'),
+								(ns01#Sodium_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Sodium'),
+								(ns01#Sodium_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Sodium')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Soluble_Fiber: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Soluble Fiber'),
+								(ns01#Soluble_Fiber_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Soluble Fiber'),
+								(ns01#Soluble_Fiber_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Soluble Fiber')
+							}),
+							ns01#Source_USF_Standard_Product_Code: product.sourceUsfStandardProductCode,
+							ns01#Spec_Sheet: product.specSheet,
+							ns01#Star_Category_Intermediate: product.starCategoryIntermediate,
+							ns01#Star_Category_Major: product.starCategoryMajor,
+							ns01#Storage_Code: product.storageCode,
+							ns01#Storage_Code_Description: product.storageCodeDescription,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Sugar_Alcohol: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Sugar Alcohol'),
+								(ns01#Sugar_Alcohol_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Sugar Alcohol'),
+								(ns01#Sugar_Alcohol_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Sugar Alcohol')
+							}),
+							ns01#Sustainability: product.sustainability,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Thiamin: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Thiamin'),
+								(ns01#Thiamin_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Thiamin'),
+								(ns01#Thiamin_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Thiamin')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Total_Fat: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Total Fat'),
+								(ns01#Total_Fat_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Total Fat'),
+								(ns01#Total_Fat_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Total Fat')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Total_Sugar: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Total Sugar'),
+								(ns01#Total_Sugar_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Total Sugar'),
+								(ns01#Total_Sugar_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Total Sugar')
+							}),
+							ns01#Trade_Item_Identification_Type: product.tradeItemIdentificationType,
+							(ns01#Trade_Item_Volume_From_Vendor: product.tradeItemVolumeFromVendor) if(sizeOf(product.tradeItemVolumeFromVendor)>0),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Trans_fat_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Trans Fatty Acids')
+							}),
+							(product.claimRecords map ( claimRecord , indexOfClaimRecord ) ->{
+								(ns01#Trans_Fat_Free_Indicator: claimRecord.claimValue) if(trim(claimRecord.claimName) == "Trans Fat Free (TFF)")
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Trans_fatty_acids: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Trans Fatty Acids')
+							}),
+							ns01#USA_Est_Id_Num: product.usaEstIdNum,
+							ns01#USF_Dangerous_Goods_Code: product.usfDangerousGoodsCode,
+							ns01#USF_Net_Content: product.usfNetContent,
+							ns01#USF_Product_Number: product.usfProductNumber,
+							ns01#Vendor_Discontinued_Date: product.vendorDiscontinuedDate,
+							ns01#Vendor_Ethnicity_Code: product.vendorRecord.vendorEthnicityCode,
+							ns01#Vendor_Small_Business_Indicator: product.vendorRecord.vendorSmallBusinessIndicator,
+							ns01#Vendor_Specified_Maximum_Stackable_Pallets: product.vendorSpecifiedMaximumStackablePallets,
+							ns01#Vendor_Specified_Maximum_Stackable_Tiers: product.vendorSpecifiedMaximumStackableTiers,
+							ns01#Vendor_Specified_Pallet_Size: product.vendorSpecifiedPalletSize,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Vitamin_A_IU: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Vitamin A IU'),
+								(ns01#Vitamin_A_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Vitamin A IU'),
+								(ns01#Vitamin_A_IU_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Vitamin A IU')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Vitamin_A_RE: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Vitamin A (RE)')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Vitamin_B12: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Vitamin B12'),
+								(ns01#Vitamin_B12_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Vitamin B12'),
+								(ns01#Vitamin_B12_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Vitamin B12')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Vitamin_B6: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Vitamin B6'),
+								(ns01#Vitamin_B6_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Vitamin B6'),
+								(ns01#Vitamin_B6_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Vitamin B6')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Vitamin_Beta_Carotene: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Vitamin Beta Carotene'),
+								(ns01#Vitamin_Beta_Carotene_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Vitamin Beta Carotene')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Vitamin_C_Quantity: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Vitamin C'),
+								(ns01#Vitamin_C_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Vitamin C'),
+								(ns01#Vitamin_C_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Vitamin C')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Vitamin_D: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Vitamin D'),
+								(ns01#Vitamin_D_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Vitamin D'),
+								(ns01#Vitamin_D_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Vitamin D')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Vitamin_E: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Vitamin E'),
+								(ns01#Vitamin_E_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Vitamin E'),
+								(ns01#Vitamin_E_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Vitamin E')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Vitamin_K: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Vitamin K'),
+								(ns01#Vitamin_K_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Vitamin K'),
+								(ns01#Vitamin_K_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Vitamin K')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Water: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Water')
+							}),
+							ns01#Weight_Density: product.weightDensity,
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Water_Pct: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Water'),
+								(ns01#Water_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Water')
+							}),
+							(product.nutrientRecords map ( nutrientRecord , indexOfNutrientRecord ) ->{
+								(ns01#Zinc: nutrientRecord.nutrientValue) if(trim(nutrientRecord.nutrientName) == 'Zinc'),
+								(ns01#Zinc_RDV_Percentage: nutrientRecord.nutrientRDVPercentage) if(trim(nutrientRecord.nutrientName) == 'Zinc'),
+								(ns01#Zinc_UOM: nutrientRecord.nutrientUOM) if(trim(nutrientRecord.nutrientName) == 'Zinc')
+							}),
+						}
+					},
+					(product.apnMappingRecords map ( apnMappingRecord , indexOfApnMappingRecord ) -> {
+						ns02#pim_ref: {
+							ns02#mainframe_id: apnMappingRecord.mainframeId,
+							ns02#ndg_flag: apnMappingRecord.ndgFlag as Boolean default 0,
+							ns02#rel_type: apnMappingRecord.relType,
+							(ns02#conv_fctr: product.convFctr as Number) if(sizeOf(product.convFctr)>0),
+							ns02#ref_status: apnMappingRecord.refStatus
+						},
+					}),
+					ns03#Product_Secondary: {
+						ns03#Brand_Abbrev_Psys: product.brandAbbrevPsys,
+						ns03#Brand_Type: product.brandRecord.brandType,
+						ns03#HQ_Family_Class_ID: product.hqFamilyClassId,
+						(ns03#PIM_Group: product.pimGroupRecord.productCategoryCode as String) if(sizeOf(product.pimGroupRecord.productCategoryCode)>0),
+						ns03#Laptop_Desc: product.laptopDesc,
+						ns03#Psys_Storage_Code: product.psysStrorageCode,
+						ns03#Brand_Abbrev_Asys: product.brandRecord.brandAbbrevAsys,
+						ns03#Description_Long: product.productContentManagementRecord.descriptionLong,
+						ns03#Product_Class_Code: product.pimGroupRecord.productClassCode,
+						(ns03#Product_Category_Code: product.pimGroupRecord.productCategoryCode as String) if(sizeOf(product.pimGroupRecord.productCategoryCode)>0),
+						ns03#Exclusive_Brand: product.exclusiveBrand,
+						ns03#Star_Warehouse_State: product.pimGroupRecord.starWarehouseState,
+						ns03#Star_Warehouse_Handling: product.pimGroupRecord.starWarehouseHandling,
+						ns03#Priority_Indicator: product.priorityIndicator,
+						ns03#Category_Manager_Network_Id: product.categoryManagerNetworkId,
+						ns03#Category_Manager_Name: product.categoryManagerName,
+						ns03#Category_Vp_Name: product.categoryVpName,
+						ns03#Category_Vp_Network_Id: product.categoryVpNetworkId,
+						ns03#Division: product.division
+					}
+				}
+			})
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="publishedTransformedXMLbeforeLogger" doc:id="47f71dd1-6e23-4556-86bd-8984af422ee8" category="com.usf.logger" message="#[%dw 2.0 output
+application/json
+--- 
+{
+&quot;txnID&quot; : attributes.headers.'transaction-id' default &quot;&quot;,
+&quot;txnLogSeq&quot;: &quot;2-beforeJMSPublish&quot;,
+&quot;txnapiStartTime&quot;: now(),
+&quot;jmsUserProperties&quot;: 
+	{
+		&quot;request_type&quot;:payload.PIM_Transaction.Header.request_type,
+		&quot;trans_id&quot;: payload.PIM_Transaction.Header.trans_id,
+		&quot;trans_type&quot;: payload.PIM_Transaction.Header.trans_type,
+		&quot;userid&quot;: payload.PIM_Transaction.Header.userid,
+		&quot;eff_date&quot;: payload.PIM_Transaction.Header.eff_date,
+		},
+&quot;reqPayload&quot;: write(payload,&quot;application/xml&quot;,{&quot;encoding&quot;: &quot;UTF-8&quot;}) default &quot;&quot;
+}]"/>
+		<jms:publish doc:name="pubishTransformedXML" doc:id="df8785bb-3de7-44b8-9b96-79e358cb7198" destination="${jms.publisher.queue}" config-ref="JMS_Config" persistentDelivery="true" sendCorrelationId="ALWAYS">
+			<reconnect frequency="${jms.reconnection.frequency}" count="${jms.reconnection.attempts}"/>
+			<jms:message>
+				<jms:properties ><![CDATA[#[{request_type:payload.PIM_Transaction.Header.request_type,
+ trans_id: payload.PIM_Transaction.Header.trans_id,
+ trans_type: payload.PIM_Transaction.Header.trans_type,
+ userid: payload.PIM_Transaction.Header.userid,
+ eff_date: payload.PIM_Transaction.Header.eff_date
+}]]]></jms:properties>
+			</jms:message>
+		</jms:publish>
+		<logger level="INFO" doc:name="publishedTransformedXMLafterLogger" doc:id="0c1ead16-5529-4cd1-8da3-d42158f7205c" message="#[%dw 2.0 output
+application/json
+--- 
+{
+&quot;txnID&quot; : attributes.headers.'transaction-id' default &quot;&quot;,
+&quot;txnLogSeq&quot;: &quot;3-afterJMSPublish&quot;,
+&quot;txnapiStartTime&quot;: now(),
+&quot;message&quot;: &quot;send transformed xml to Tibco Queue&quot;
+}]" category="com.usf.logger"/>
+		<set-payload value='#[%dw 2.0
+output application/json
+---
+{
+        "message": "successfully Published to Tibco Queue"
+}]' doc:name="responsePayload" doc:id="5556649e-dc6c-4b57-bf14-94dd30569569" />
+		<logger level="INFO" doc:name="exitLogger" doc:id="107fc837-8bc6-40d1-80a8-3e5f9b7dd544" category="com.usf.logger" message='#[%dw 2.0 output
+application/json
+--- 
+{
+"txnID" : vars.transactionID default "",
+"txnLogSeq": "4-apiExit",
+"txnapiEndTime": now(),
+"reqPayload": payload default ""
+}]'/>
+		<remove-variable doc:name="removeTransactionId" doc:id="04bb4819-b7d1-4c39-90f3-e10a3642f9e7" variableName="transactionID" />
+	</sub-flow>
+</mule>

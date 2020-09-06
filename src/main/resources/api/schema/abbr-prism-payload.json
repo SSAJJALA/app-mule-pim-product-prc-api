@@ -1,0 +1,15 @@
+{
+  "header" : {
+    "transId" : "",
+    "transType" : "",
+    "requestType" : "",
+    "userid" : "",
+    "effDate" : "",
+    "cloneType" : "",
+    "isResubmit" : ""
+  },
+  "abbreviationRecord" : {
+    "abbreviation" : "",
+    "word" : ""
+  }
+}

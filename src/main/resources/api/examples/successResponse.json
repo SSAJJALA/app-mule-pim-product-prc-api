@@ -1,0 +1,4 @@
+{
+        "statusCode": "200",
+        "responseMsg": "Message successfully Published to Tibco Queue"
+}

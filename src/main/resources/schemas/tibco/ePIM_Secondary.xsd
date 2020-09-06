@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 sp2 (http://www.altova.com) by Krishnan Chirchabesan (Tescra) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pim-secondary="urn:pim-secondary" targetNamespace="urn:pim-secondary" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="Product_Secondary">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Brand_Abbrev_Psys" type="xs:string" minOccurs="0"/>
+				<xs:element name="Brand_Type" type="xs:string" minOccurs="0"/>
+				<xs:element name="HQ_Family_Class_ID" type="xs:string" minOccurs="0"/>
+				<xs:element name="PIM_Group" type="xs:string" minOccurs="0"/>
+				<xs:element name="Laptop_Desc" type="xs:string" minOccurs="0"/>
+				<xs:element name="Psys_Storage_Code" type="xs:string" minOccurs="0"/>
+				<xs:element name="Brand_Abbrev_Asys" type="xs:string" minOccurs="0"/>
+				<xs:element name="Description_Long" type="xs:string" minOccurs="0"/>
+				<xs:element name="Product_Class_Code" type="xs:string" minOccurs="0"/>
+				<xs:element name="Product_Category_Code" type="xs:string" minOccurs="0"/>
+				<xs:element name="Exclusive_Brand" type="xs:string" minOccurs="0"/>
+				<xs:element name="Star_Warehouse_State" type="xs:string" minOccurs="0"/>
+				<xs:element name="Star_Warehouse_Handling" type="xs:string" minOccurs="0"/>
+				<xs:element name="Priority_Indicator" type="xs:string" minOccurs="0"/>
+				<xs:element name="Category_Manager_Network_Id" type="xs:string" minOccurs="0"/>
+				<xs:element name="Category_Manager_Name" type="xs:string" minOccurs="0"/>
+				<xs:element name="Category_Vp_Name" type="xs:string" minOccurs="0"/>
+				<xs:element name="Category_Vp_Network_Id" type="xs:string" minOccurs="0"/>
+				<xs:element name="Division" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Brand_Secondary">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Brand_Abbrev_ASys" type="xs:string" nillable="true" minOccurs="0"/>
+				<xs:element name="Brand_Abbrev_PSys" type="xs:string" minOccurs="0"/>
+				<xs:element name="Brand_Type" type="xs:string" minOccurs="0"/>
+				<xs:element name="USF_Manufacturer_Nbr" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Division_Attach_Secondary">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Asys_Division_Code" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Hazmat_Secondary">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Hazard_Ship_Desc" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

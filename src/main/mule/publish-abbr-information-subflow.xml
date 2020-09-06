@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+	<sub-flow name="publish-abbr-information-subflow" doc:id="d784b57b-0cc0-4e5d-85e2-3d5b129e3e9d" >
+		<logger level="INFO" doc:name="entryLogger" doc:id="0238cb09-c1ec-468e-89ec-8769fb0ce802" message="#[%dw 2.0 output
+application/json
+--- 
+{
+&quot;txnID&quot; : attributes.headers.'transaction-id' default &quot;&quot;,
+&quot;txnLogSeq&quot;: &quot;1-apiEntry&quot;,
+&quot;txnapiStartTime&quot;: now(),
+&quot;reqPayload&quot;: payload
+}]" category="com.usf.logger"/>
+		<set-variable value="#[attributes.headers.'transaction-id']" doc:name="transactionID" doc:id="519235f4-282c-47de-91ec-0a5252b13452" variableName="transactionID"/>
+		<ee:transform doc:name="mapJsonToTibcoXML" doc:id="217b5820-21ba-4146-9661-c5b07e5b1604" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 urn:pim-eai
+ns ns01 urn:ePIM2
+ns ns02 urn:pim-xref
+ns ns03 urn:pim-secondary
+---
+{
+	ns0#PIM_Transaction: {
+		ns0#Header: {
+			ns0#trans_id: payload.header.transId,
+			ns0#request_type: payload.header.requestType,
+			ns0#trans_type: payload.header.transType,
+			ns0#userid: payload.header.userid,
+			ns0#eff_date: payload.header.effDate,
+			ns0#clone_type: payload.header.cloneType,
+			ns0#isResubmit: payload.header.isResubmit
+		},
+		ns0#"eai-abbreviation": {
+			ns0#Word: payload.abbreviationRecord.word,
+			ns0#Abbreviation: payload.abbreviationRecord.abbreviation
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="publishedTransformedXMLbeforeLogger" doc:id="47f71dd1-6e23-4556-86bd-8984af422ee8" category="com.usf.logger" message='#[%dw 2.0 output
+application/json
+--- 
+{
+"txnID" : vars.ransactionID default "",
+"txnLogSeq": "2-beforeJMSPublish",
+"txnapiStartTime": now(),
+"jmsUserProperties": 
+	{
+		"request_type":payload.PIM_Transaction.Header.request_type,
+		"trans_id": payload.PIM_Transaction.Header.trans_id,
+		"trans_type": payload.PIM_Transaction.Header.trans_type,
+		"userid": payload.PIM_Transaction.Header.userid,
+		"eff_date": payload.PIM_Transaction.Header.eff_date,
+		},
+"reqPayload": write(payload,"application/xml",{"encoding": "UTF-8"}) default ""
+}]'/>
+		<jms:publish doc:name="pubishTransformedXML" doc:id="df8785bb-3de7-44b8-9b96-79e358cb7198" destination="${jms.publisher.queue}" config-ref="JMS_Config" persistentDelivery="true" sendCorrelationId="ALWAYS">
+			<reconnect frequency="${jms.reconnection.frequency}" count="${jms.reconnection.attempts}" />
+			<jms:message>
+				<jms:properties ><![CDATA[#[{request_type:payload.PIM_Transaction.Header.request_type,
+ trans_id: payload.PIM_Transaction.Header.trans_id,
+ trans_type: payload.PIM_Transaction.Header.trans_type,
+ userid: payload.PIM_Transaction.Header.userid,
+ eff_date: payload.PIM_Transaction.Header.eff_date
+}]]]></jms:properties>
+			</jms:message>
+		</jms:publish>
+		<logger level="INFO" doc:name="publishedTransformedXMLafterLogger" doc:id="1dd52a8d-93cf-4e2f-9ec3-156c2a8a18a4" message='#[%dw 2.0 output
+application/json
+--- 
+{
+"txnID" : vars.ransactionID default "",
+"txnLogSeq": "3-afterJMSPublish",
+"txnapiStartTime": now(),
+"message": "send transformed xml to Tibco Queue"
+}]' category="com.usf.logger"/>
+		<set-payload value='#[%dw 2.0
+output application/json
+---
+{
+        "message": "successfully Published to Tibco Queue"
+}]' doc:name="responsePayload" doc:id="5556649e-dc6c-4b57-bf14-94dd30569569" />
+		<logger level="INFO" doc:name="exitLogger" doc:id="107fc837-8bc6-40d1-80a8-3e5f9b7dd544" category="com.usf.logger" message='#[%dw 2.0 output
+application/json
+--- 
+{
+"txnID" : vars.transactionID default "",
+"txnLogSeq": "4-apiExit",
+"txnapiEndTime": now(),
+"reqPayload": payload default ""
+}]'/>
+		<remove-variable doc:name="removeTransactionId" doc:id="1980aa60-7e28-4208-84fc-c5845916ef2d" variableName="transactionID"/>
+	</sub-flow>
+</mule>

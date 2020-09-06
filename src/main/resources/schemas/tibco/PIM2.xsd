@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- edited with XMLSpy v2006 rel. 3 U (http://www.altova.com) by Daniel Moore (US FoodService) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns:pim-eai="urn:pim-eai"
+	 xmlns:ePIM2="urn:ePIM2"
+	 xmlns:pim-constants="urn:pim-constants"
+	 xmlns:pim-secondary="urn:pim-secondary"
+	 xmlns:pim-brand="urn:pim-brand"
+	 xmlns:pim-hazmat="urn:pim-hazmat"
+	 xmlns:pim-div-attach="urn:pim-div-attach"
+	 xmlns:pim-xref="urn:pim-xref"
+	 xmlns:pim-abbreviation="urn:pim-abbreviation"
+	 targetNamespace="urn:pim-eai"
+	 id="pim-eai"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:import namespace="urn:ePIM2" schemaLocation="ePIM2.xsd"/>
+	<xs:import namespace="urn:pim-constants" schemaLocation="ePIM_Constants.xsd"/>
+	<xs:import namespace="urn:pim-secondary" schemaLocation="ePIM_Secondary.xsd"/>
+	<xs:import namespace="urn:pim-brand" schemaLocation="ePIM_Brand.xsd"/>
+	<xs:import namespace="urn:pim-hazmat" schemaLocation="ePIM_Hazmat.xsd"/>
+	<xs:import namespace="urn:pim-div-attach" schemaLocation="ePIM_Division_Attach.xsd"/>
+	<xs:import namespace="urn:pim-xref" schemaLocation="ePIM_XREF.xsd"/>
+	<xs:import namespace="urn:pim-abbreviation" schemaLocation="ePIM_Abbreviation.xsd"/>
+	<xs:element name="PIM_Transaction">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="pim-eai:Header"/>
+				<xs:element ref="pim-eai:eai-products" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Would repeat for Update and Merge transactions</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="pim-eai:eai-brand" minOccurs="0"/>
+				<xs:element ref="pim-eai:eai-hazmat" minOccurs="0"/>
+				<xs:element ref="pim-eai:eai-div-attach" minOccurs="0"/>
+				<xs:element ref="pim-eai:eai-abbreviation" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Header">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="trans_id" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Unique ID which relates the item from EPX to EAI and vice versa</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="request_type" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Can be values of "PRODUCT","BRAND","HAZMAT","ABBREV","ATTACH"</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="trans_type" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Can be of value 'Add', 'Update' or 'Merge'</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="userid" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>User who approve the request</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="eff_date" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>System date</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="clone_type" type="xs:string" minOccurs="0"/>
+				<xs:element name="isResubmit" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="eai-product">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="state" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Can be of value 'New' or 'Existing'</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="ePIM2:Product" minOccurs="0"/>
+				<xs:element ref="pim-xref:pim_ref" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Would repeat if there is more than one A and P number</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="pim-secondary:Product_Secondary" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="XREF">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="product" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>A Number/ P Number</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="rel_type" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>APRM/ASEC/PPRM/PSEC</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="status" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>A - Active / I- Inactive</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="conv_fctr" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="eai-products">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="pim-eai:eai-product" minOccurs="0" maxOccurs="2"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="eai-brand">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="pim-brand:Brand" minOccurs="0"/>
+				<xs:element ref="pim-secondary:Brand_Secondary" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="eai-hazmat">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="pim-hazmat:Hazmat" minOccurs="0"/>
+				<xs:element ref="pim-secondary:Hazmat_Secondary" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="eai-div-attach">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="pim-div-attach:Division_Attach" minOccurs="0"/>
+				<xs:element ref="pim-secondary:Division_Attach_Secondary" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EAI_Response">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="pim-eai:Header"/>
+				<xs:element ref="pim-eai:eai-transaction-data"/>
+				<xs:element ref="pim-eai:PIM_Transaction" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="eai-transaction-data">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="statusCode" type="xs:string"/>
+				<xs:element name="message" type="xs:string"/>
+				<xs:element name="additionalDetails" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="eai-abbreviation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Word" type="xs:string" minOccurs="0"/>
+				<xs:element name="Abbreviation" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

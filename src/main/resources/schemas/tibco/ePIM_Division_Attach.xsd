@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 sp2 (http://www.altova.com) by Krishnan Chirchabesan (Tescra) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pim-secondary="urn:pim-div-attach" targetNamespace="urn:pim-div-attach" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="Division_Attach">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="System_Code" type="xs:string" minOccurs="0"/>
+				<xs:element name="Branch_Code" type="xs:string" minOccurs="0"/>
+				<xs:element name="Product_Number" type="xs:string" minOccurs="0"/>
+				<xs:element name="Vendor_Number_Prime" type="xs:string" minOccurs="0"/>
+				<xs:element name="Vendor_Item_Code" type="xs:string" minOccurs="0"/>
+				<xs:element name="Pallet_HI" type="xs:string" minOccurs="0"/>
+				<xs:element name="Pallet_TI" type="xs:string" minOccurs="0"/>
+				<xs:element name="Disp_PGM" type="xs:string" minOccurs="0"/>
+				<xs:element name="Pick_Slot" type="xs:string" minOccurs="0"/>
+				<xs:element name="Tax_Indicator" type="xs:string" minOccurs="0"/>
+				<xs:element name="Tax_Indicator2" type="xs:string" minOccurs="0"/>
+				<xs:element name="Tax_Indicator3" type="xs:string" minOccurs="0"/>
+				<xs:element name="Buyer_Number" type="xs:string" minOccurs="0"/>
+				<xs:element name="Min_GPPCT" type="xs:string" minOccurs="0"/>
+				<xs:element name="Max_GPPCT" type="xs:string" minOccurs="0"/>
+				<xs:element name="Price_Perind" type="xs:string" minOccurs="0"/>
+				<xs:element name="Price_Control" type="xs:string" minOccurs="0"/>
+				<xs:element name="GP_Indicator" type="xs:string" minOccurs="0"/>
+				<xs:element name="Product_Status" type="xs:string" minOccurs="0"/>
+				<xs:element name="Vendor_Pallet_HI" type="xs:string" minOccurs="0"/>
+				<xs:element name="Vendor_Pallet_TI" type="xs:string" minOccurs="0"/>
+				<xs:element name="Surcharge" type="xs:string" minOccurs="0"/>
+				<xs:element name="Number_Sub" type="xs:string" minOccurs="0"/>
+				<xs:element name="Lock_Indicator" type="xs:string" minOccurs="0"/>
+				<xs:element name="Consign_Indicator" type="xs:string" minOccurs="0"/>
+				<xs:element name="Case" type="xs:string" minOccurs="0"/>
+				<xs:element name="Sub_Factor" type="xs:string" minOccurs="0"/>
+				<xs:element name="LND_RND_Code" type="xs:string" minOccurs="0"/>
+				<xs:element name="KFC_Class" type="xs:string" minOccurs="0"/>
+				<xs:element name="Initial_DD" type="xs:string" minOccurs="0"/>
+				<xs:element name="PRCB_Section" type="xs:string" minOccurs="0"/>
+				<xs:element name="PRCB_Sequence" type="xs:string" minOccurs="0"/>
+				<xs:element name="Customer_Control" type="xs:string" minOccurs="0"/>
+				<xs:element name="WHS_Code" type="xs:string" minOccurs="0"/>
+				<xs:element name="Pallet_Size" type="xs:string" minOccurs="0"/>
+				<xs:element name="Rounding_Code" type="xs:string" minOccurs="0"/>
+				<xs:element name="Spread_Indicator" type="xs:string" minOccurs="0"/>
+				<xs:element name="GP1" type="xs:string" minOccurs="0"/>
+				<xs:element name="GP2" type="xs:string" minOccurs="0"/>
+				<xs:element name="Landing_Cost" type="xs:string" minOccurs="0"/>
+				<xs:element name="Price_Perlb" type="xs:string" minOccurs="0"/>
+				<xs:element name="Price1" type="xs:string" minOccurs="0"/>
+				<xs:element name="Price2" type="xs:string" minOccurs="0"/>
+				<xs:element name="Spread" type="xs:string" minOccurs="0"/>
+				<xs:element name="Average_Price_Indicator" type="xs:string" minOccurs="0"/>
+				<xs:element name="SPI_Code" type="xs:string" minOccurs="0"/>
+				<xs:element name="FCST_FG" type="xs:string" minOccurs="0"/>
+				<xs:element name="TM_MIN" type="xs:string" minOccurs="0"/>
+				<xs:element name="SERV_LV" type="xs:string" minOccurs="0"/>
+				<xs:element name="Fixed_Comm" type="xs:string" minOccurs="0"/>
+				<xs:element name="Expiration_Report_Date" type="xs:string" minOccurs="0"/>
+				<xs:element name="Proc_Indicator" type="xs:string" minOccurs="0"/>
+				<xs:element name="CWTVAR_IN" type="xs:string" minOccurs="0"/>
+				<xs:element name="CWTVAR_AMT" type="xs:string" minOccurs="0"/>
+				<xs:element name="CODEDT_IND" type="xs:string" minOccurs="0"/>
+				<xs:element name="CD_DT_DAYS" type="xs:string" minOccurs="0"/>
+				<xs:element name="Temp_Indicator" type="xs:string" minOccurs="0"/>
+				<xs:element name="Fork_Pull" type="xs:string" minOccurs="0"/>
+				<xs:element name="DQ_ROY_Indicator" type="xs:string" minOccurs="0"/>
+				<xs:element name="WRN_Label_IN" type="xs:string" minOccurs="0"/>
+				<xs:element name="Reslot" type="xs:string" minOccurs="0"/>
+				<xs:element name="Reserved_Slot" type="xs:string" minOccurs="0"/>
+				<xs:element name="Meatcut_FL" type="xs:string" minOccurs="0"/>
+				<xs:element name="USDA_Desc_Code" type="xs:string" minOccurs="0"/>
+				<xs:element name="SPE_Prod" type="xs:string" minOccurs="0"/>
+				<xs:element name="Customer" type="xs:string" minOccurs="0"/>
+				<xs:element name="SPL_Number" type="xs:string" minOccurs="0"/>
+				<xs:element name="Multiunit" type="xs:string" minOccurs="0"/>
+				<xs:element name="Comment_Detail" type="xs:string" minOccurs="0"/>
+				<xs:element name="Surcharge_Code" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,15 @@
+{
+   "header" : {
+    "transId" : "12344321",
+    "transType" : "ABBREVIATION",
+    "requestType" : "UPDATE",
+    "userid" : "X121700",
+    "effDate" : "09132019",
+    "cloneType" : "1",
+    "isResubmit" : "N"
+  },
+  "abbreviationRecord" : {
+    "abbreviation" : "abbreviation",
+    "word" : "abbr"
+  }
+}
